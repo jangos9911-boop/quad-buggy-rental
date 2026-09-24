@@ -67,19 +67,19 @@ async function api(req, env) {
   if(path==="/api/setup" && method==="POST"){
     const body=await req.json().catch(()=>({}));
     if(!env.SETUP_TOKEN || body.setupToken!==env.SETUP_TOKEN) return json({error:"Invalid setup token"},403);
-    if(!body.email||!body.password||body.password.length<10) return json({error:"Email and password (10+ chars) required"},400);
+    if(!body.username||!body.password||body.password.length<10) return json({error:"Username and password (10+ chars) required"},400);
     const existing=await env.DB.prepare("SELECT id FROM users LIMIT 1").first();
     if(existing) return json({error:"Setup is already completed"},409);
     const salt=crypto.randomUUID(), hash=await passwordHash(body.password,salt);
     const r=await env.DB.prepare("INSERT INTO users(email,name,role,active,password_hash,password_salt) VALUES(?,?, 'admin',1,?,?)")
-      .bind(body.email.toLowerCase().trim(),body.name||"Administrator",hash,salt).run();
-    const user={id:r.meta.last_row_id,email:body.email.toLowerCase().trim(),name:body.name||"Administrator",role:"admin",active:1};
+      .bind(body.username.trim(),body.name||"Administrator",hash,salt).run();
+    const user={id:r.meta.last_row_id,email:body.username.trim(),name:body.name||"Administrator",role:"admin",active:1};
     return json({ok:true,user},201,{"set-cookie":await sessionCookie(user,env)});
   }
   if(path==="/api/login" && method==="POST"){
-    const b=await req.json().catch(()=>({})), u=await env.DB.prepare("SELECT * FROM users WHERE lower(email)=lower(?) AND active=1").bind(b.email||"").first();
-    if(!u||!b.password||!(await verifyPassword(b.password,u.password_salt,u.password_hash))) return json({error:"Invalid email or password"},401);
-    const user={id:u.id,email:u.email,name:u.name,role:u.role,active:u.active};
+    const b=await req.json().catch(()=>({})), u=await env.DB.prepare("SELECT * FROM users WHERE lower(username)=lower(?) AND active=1").bind(b.username||"").first();
+    if(!u||!b.password||!(await verifyPassword(b.password,u.password_salt,u.password_hash))) return json({error:"Invalid username or password"},401);
+    const user={id:u.id,username:u.username,name:u.name,role:u.role,active:u.active};
     return json({ok:true,user},200,{"set-cookie":await sessionCookie(user,env)});
   }
   if(path==="/api/logout" && method==="POST") return json({ok:true},200,{"set-cookie":clearCookie()});
