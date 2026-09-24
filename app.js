@@ -33,7 +33,7 @@ function nav(){
  .map(x=>'<button class="'+(tab===x?"active":"")+'" onclick="go('+JSON.stringify(x)+')">'+x+"</button>").join("");
 }
 function shell(content){
- return '<div class="app"><aside class="side"><div class="brand">QUAD <b>RENTAL</b><small>UAE DESK</small></div><div class="nav">'+nav()+'</div><div class="muted">'+(mode==="api"?"● Cloud database":"● Offline mode")+(user?"<br>"+user.email:"")+"</div></aside><main class="main"><div class="mobile">'+nav()+"</div>"+content+"</main>"+(modal?modalHtml():"")+"</div>";
+ return `<div class="app"><aside class="side"><div class="brand">QUAD <b>RENTAL</b><small>UAE DESK</small></div><div class="nav">${nav()}</div><div class="muted">${mode==="api"?"● Cloud database":"● Offline mode"}${user?"<br>"+user.email:""}</div></aside><main class="main"><div class="mobile">${nav()}</div>${content}</main>${modal?modalHtml():""}</div>`;
 }
 function header(title,desc,action=""){return '<div class="top"><div><h1>'+title+'</h1><p class="muted">'+desc+"</p></div>"+action+"</div>";}
 function table(rows,cols){
