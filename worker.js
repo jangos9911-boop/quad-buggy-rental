@@ -64,16 +64,20 @@ async function api(req, env) {
   if(!env.DB) return json({error:"D1 is not configured. Create a D1 database and bind it as DB."},503,corsHeaders());
   const url=new URL(req.url), path=url.pathname, method=req.method;
   if(path==="/api/health") return json({ok:true,database:true,app:"quad-buggy-rental"});
+  if(path==="/api/setup" && method==="GET"){
+    const existing=await env.DB.prepare("SELECT id FROM users LIMIT 1").first();
+    return json({needsSetup:!existing});
+  }
   if(path==="/api/setup" && method==="POST"){
     const body=await req.json().catch(()=>({}));
-    if(!env.SETUP_TOKEN || body.setupToken!==env.SETUP_TOKEN) return json({error:"Invalid setup token"},403);
     if(!body.username||!body.password||body.password.length<10) return json({error:"Username and password (10+ chars) required"},400);
     const existing=await env.DB.prepare("SELECT id FROM users LIMIT 1").first();
     if(existing) return json({error:"Setup is already completed"},409);
     const salt=crypto.randomUUID(), hash=await passwordHash(body.password,salt);
-    const r=await env.DB.prepare("INSERT INTO users(email,name,role,active,password_hash,password_salt) VALUES(?,?, 'admin',1,?,?)")
-      .bind(body.username.trim(),body.name||"Administrator",hash,salt).run();
-    const user={id:r.meta.last_row_id,email:body.username.trim(),name:body.name||"Administrator",role:"admin",active:1};
+    const username=body.username.trim();
+    const r=await env.DB.prepare("INSERT INTO users(username,email,name,role,active,password_hash,password_salt) VALUES(?,?,?, 'admin',1,?,?)")
+      .bind(username,username+"@local.invalid",body.name||"Administrator",hash,salt).run();
+    const user={id:r.meta.last_row_id,username,name:body.name||"Administrator",role:"admin",active:1};
     return json({ok:true,user},201,{"set-cookie":await sessionCookie(user,env)});
   }
   if(path==="/api/login" && method==="POST"){
