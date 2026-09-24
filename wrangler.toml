@@ -9,8 +9,7 @@ not_found_handling = "single-page-application"
 [observability]
 enabled = true
 
-# After creating the production D1 database, replace DATABASE_ID below and uncomment:
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "quad-buggy-rental"
-# database_id = "YOUR_D1_DATABASE_ID"
+[[d1_databases]]
+binding = "DB"
+database_name = "quad-buggy-rental"
+database_id = "55ccb422-00a4-4432-ad3b-8ce0d53cbbdd"
