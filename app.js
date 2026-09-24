@@ -67,7 +67,7 @@ function form(fields){
  return '<div class="form">'+fields.map(f=>'<div class="field '+(f[0]==="notes"||f[0]==="description"?"full":"")+'"><label>'+f[1]+'</label><input id="f_'+f[0]+'" type="'+(f[2]||"text")+'" value="'+(f[3]||"")+'"></div>').join("")+"</div>";
 }
 function modalHtml(){
- if(modal==="login")return '<div class="modal"><div class="modalbox"><h2>Staff login</h2><p class="muted">Production database connected.</p>'+form([["email","Email"],["password","Password","password"]])+'<div class="actions"><button class="btn primary" onclick="login()">Sign in</button></div></div></div>';
+ if(modal==="login")return '<div class="modal"><div class="modalbox"><h2>Staff login</h2><p class="muted">Production database connected.</p>'+form([["username","Username"],["password","Password","password"]])+'<div class="actions"><button class="btn primary" onclick="login()">Sign in</button></div></div></div>';
  const defs={
  booking:["New booking",[["customer_id","Customer ID","number"],["vehicle_id","Vehicle ID","number"],["service_id","Service ID","number"],["quantity","Hours / quantity","number","1"],["unit_price","Unit price AED","number","0"],["discount","Discount AED","number","0"],["vat_rate","VAT %","number","5"],["deposit","Deposit AED","number","0"],["payment_status","Payment status","text","unpaid"],["start_at","Start","datetime-local"],["end_at","End","datetime-local"],["notes","Notes"]]],
  vehicles:["Add vehicle",[["name","Vehicle name"],["category","Category","text","Quad"],["registration","Registration"],["rate_per_hour","Hourly rate AED","number"],["status","Status","text","available"],["notes","Notes"]]],
@@ -84,7 +84,7 @@ window.go=async x=>{tab=x;modal="";if(mode==="api"&&user)await refreshApi();rend
 window.openm=x=>{modal=x;render();};
 window.closem=()=>{modal="";render();};
 window.login=async()=>{
- try{const r=await api("/api/login",{method:"POST",body:JSON.stringify({email:val("email"),password:val("password")})});user=r.user;modal="";await refreshApi();render();}
+ try{const r=await api("/api/login",{method:"POST",body:JSON.stringify({username:val("username"),password:val("password")})});user=r.user;modal="";await refreshApi();render();}
  catch(e){alert(e.message);}
 };
 window.submitForm=async()=>{
