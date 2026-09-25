@@ -39,23 +39,16 @@ function cookies(req) {
   return Object.fromEntries((req.headers.get("cookie")||"").split(";").filter(Boolean).map(x=>{const i=x.indexOf("=");return [x.slice(0,i).trim(),decodeURIComponent(x.slice(i+1))]}));
 }
 async function auth(req, env) {
-  if(!env.DB || !env.AUTH_SECRET) return null;
+  if(!env.DB) return null;
   const token=cookies(req)[COOKIE]; if(!token) return null;
-  const [body,sig]=token.split(".");
-  if(!body||!sig||sig!==(await hmac(body,env.AUTH_SECRET))) return null;
-  let p; try { p=JSON.parse(new TextDecoder().decode(unb64(body))); } catch { return null; }
-  if(!p.exp||p.exp<Date.now()) return null;
-  const u=await env.DB.prepare("SELECT id,username,email,name,role,active FROM users WHERE id=?").bind(p.uid).first();
-  return u&&u.active ? u : null;
-}
-async function requireAuth(req,env) {
-  const u=await auth(req,env); if(!u) throw new Response(JSON.stringify({error:"unauthenticated"}),{status:401,headers:{"content-type":"application/json"}});
-  return u;
+  const row=await env.DB.prepare("SELECT u.id,u.username,u.email,u.name,u.role,u.active FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token=? AND s.expires_at>? AND u.active=1").bind(token,Date.now()).first().catch(()=>null);
+  return row||null;
 }
 async function sessionCookie(user, env) {
-  const body=b64(new TextEncoder().encode(JSON.stringify({uid:user.id,exp:Date.now()+SESSION_DAYS*86400000})));
-  const sig=await hmac(body,env.AUTH_SECRET);
-  return `${COOKIE}=${body}.${sig}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${SESSION_DAYS*86400}`;
+  const token=crypto.randomUUID()+"-"+crypto.randomUUID();
+  const exp=Date.now()+SESSION_DAYS*86400000;
+  await env.DB.prepare("INSERT INTO sessions(token,user_id,expires_at) VALUES(?,?,?)").bind(token,user.id,exp).run();
+  return COOKIE+"="+token+"; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age="+(SESSION_DAYS*86400);
 }
 function clearCookie(){return COOKIE+"=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0";}
 function clean(o){return o&&typeof o==="object"?Object.fromEntries(Object.entries(o).filter(([,v])=>v!==undefined)):{};}
@@ -96,7 +89,10 @@ async function api(req, env) {
       return json({error:"Login server error",detail:String(e?.message||e)},500);
     }
   }
-  if(path==="/api/logout" && method==="POST") return json({ok:true},200,{"set-cookie":clearCookie()});
+  if(path==="/api/logout" && method==="POST"){
+    const token=cookies(req)[COOKIE]; if(token) await env.DB.prepare("DELETE FROM sessions WHERE token=?").bind(token).run().catch(()=>{});
+    return json({ok:true},200,{"set-cookie":clearCookie()});
+  }
   if(path==="/api/me" && method==="GET") {
     const u=await auth(req,env); return u?json({authenticated:true,user:u}):json({authenticated:false},401);
   }
