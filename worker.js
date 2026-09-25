@@ -34,7 +34,7 @@ async function passwordHash(password, salt) {
   const bits=await crypto.subtle.deriveBits({name:"PBKDF2",salt:new TextEncoder().encode(salt),iterations:120000,hash:"SHA-256"},key,256);
   return b64(bits);
 }
-async function verifyPassword(password, salt, hash) { return (await passwordHash(password,salt))===hash; }
+async function verifyPassword(password, salt, hash) { const got=await passwordHash(password,salt); return got===hash || got+"="===hash; }
 function cookies(req) {
   return Object.fromEntries((req.headers.get("cookie")||"").split(";").filter(Boolean).map(x=>{const i=x.indexOf("=");return [x.slice(0,i).trim(),decodeURIComponent(x.slice(i+1))]}));
 }
@@ -81,7 +81,7 @@ async function api(req, env) {
       const user={id:u.id,username:u.username,name:u.name,role:u.role,active:u.active};
       return json({ok:true,user},200,{"set-cookie":await sessionCookie(user,env)});
     } catch(e) {
-      return json({error:"Login server error",detail:String(e?.message||e)},500);
+      return json({error:"Login failed: "+String(e?.message||e)},500);
     }
   }
   if(path==="/api/logout" && method==="POST"){
