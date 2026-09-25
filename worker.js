@@ -45,7 +45,7 @@ async function auth(req, env) {
   if(!body||!sig||sig!==(await hmac(body,env.AUTH_SECRET))) return null;
   let p; try { p=JSON.parse(new TextDecoder().decode(unb64(body))); } catch { return null; }
   if(!p.exp||p.exp<Date.now()) return null;
-  const u=await env.DB.prepare("SELECT id,email,name,role,active FROM users WHERE id=?").bind(p.uid).first();
+  const u=await env.DB.prepare("SELECT id,username,email,name,role,active FROM users WHERE id=?").bind(p.uid).first();
   return u&&u.active ? u : null;
 }
 async function requireAuth(req,env) {
@@ -81,10 +81,16 @@ async function api(req, env) {
     return json({ok:true,user},201,{"set-cookie":await sessionCookie(user,env)});
   }
   if(path==="/api/login" && method==="POST"){
-    const b=await req.json().catch(()=>({})), u=await env.DB.prepare("SELECT * FROM users WHERE lower(username)=lower(?) AND active=1").bind(b.username||"").first();
-    if(!u||!b.password||!(await verifyPassword(b.password,u.password_salt,u.password_hash))) return json({error:"Invalid username or password"},401);
-    const user={id:u.id,username:u.username,name:u.name,role:u.role,active:u.active};
-    return json({ok:true,user},200,{"set-cookie":await sessionCookie(user,env)});
+    try {
+      const b=await req.json().catch(()=>({}));
+      const u=await env.DB.prepare("SELECT * FROM users WHERE lower(username)=lower(?) AND active=1").bind(String(b.username||"").trim()).first();
+      if(!u||!b.password||!(await verifyPassword(b.password,u.password_salt,u.password_hash))) return json({error:"Invalid username or password"},401);
+      if(!env.AUTH_SECRET) return json({error:"AUTH_SECRET is not configured on the Production Worker"},503);
+      const user={id:u.id,username:u.username,name:u.name,role:u.role,active:u.active};
+      return json({ok:true,user},200,{"set-cookie":await sessionCookie(user,env)});
+    } catch(e) {
+      return json({error:"Login server error",detail:String(e?.message||e)},500);
+    }
   }
   if(path==="/api/logout" && method==="POST") return json({ok:true},200,{"set-cookie":clearCookie()});
   if(path==="/api/me" && method==="GET") {
