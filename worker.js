@@ -64,6 +64,10 @@ async function api(req, env) {
   if(!env.DB) return json({error:"D1 is not configured. Create a D1 database and bind it as DB."},503,corsHeaders());
   const url=new URL(req.url), path=url.pathname, method=req.method;
   if(path==="/api/health") return json({ok:true,database:true,app:"quad-buggy-rental"});
+  if(path==="/api/debug" && method==="GET"){
+    const u=await env.DB.prepare("SELECT id,username,active,length(password_hash) hash_len,length(password_salt) salt_len FROM users WHERE lower(username)=lower(?)").bind("admin").first().catch(e=>({db_error:String(e?.message||e)}));
+    return json({db:!!env.DB,authSecret:!!env.AUTH_SECRET,user:u});
+  }
   if(path==="/api/setup" && method==="GET"){
     const existing=await env.DB.prepare("SELECT id FROM users LIMIT 1").first();
     return json({needsSetup:!existing});
