@@ -6,7 +6,6 @@ ALTER TABLE vehicles ADD COLUMN next_service_date TEXT;
 ALTER TABLE vehicles ADD COLUMN next_service_odometer REAL;
 ALTER TABLE vehicles ADD COLUMN insurance_expiry TEXT;
 ALTER TABLE vehicles ADD COLUMN registration_expiry TEXT;
-ALTER TABLE vehicles ADD COLUMN notes TEXT;
 
 CREATE TABLE IF NOT EXISTS vehicle_inspections (
  id INTEGER PRIMARY KEY AUTOINCREMENT,
