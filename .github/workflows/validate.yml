@@ -15,3 +15,5 @@ jobs:
           node-version: 22
       - name: Check Worker syntax
         run: node --check worker.js
+      - name: Check inline app script syntax
+        run: node .github/scripts/check-inline-script.mjs && node --check /tmp/rentalos-inline.js
