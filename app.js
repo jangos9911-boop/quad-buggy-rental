@@ -46,8 +46,8 @@ function overview(){
  const rev=S.rentals.reduce((a,x)=>a+Number(x.total||0),0);
  const ex=S.expenses.reduce((a,x)=>a+Number(x.amount||0),0);
  const out=S.rentals.filter(x=>x.payment_status!=="paid").reduce((a,x)=>a+Number(x.total||0),0);
- return header("Overview","Rental operations and cashflow.",'<button class="btn primary" onclick="openm(\'booking\')">+ New booking</button>')+
- '<div class="grid"><div class="card">Revenue<div class="metric accent">'+money(rev)+"</div></div>"+
+ return header("Overview","A considered view of your rental business.",'<button class="btn primary" onclick="openm(\'booking\')">+ New booking</button>')+
+ '<div class="overviewHero"><div><div class="eyebrow">OWNER OVERVIEW</div><h2>Made for smoother rentals.</h2><p>Revenue, costs and outstanding balances in one calm workspace.</p></div><div class="heroMark">Q<span>R</span><small>RENTAL DESK</small></div></div><div class="grid"><div class="card">Revenue<div class="metric accent">'+money(rev)+"</div></div>"+
  '<div class="card">Expenses<div class="metric">'+money(ex)+"</div></div>"+
  '<div class="card">Net result<div class="metric accent">'+money(rev-ex)+"</div></div>"+
  '<div class="card">Outstanding<div class="metric">'+money(out)+"</div></div></div>"+
