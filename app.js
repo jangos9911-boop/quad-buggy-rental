@@ -69,7 +69,7 @@ function form(fields){
 function modalHtml(){
  if(modal==="login")return '<div class="modal"><div class="modalbox"><h2>Staff login</h2><p class="muted">Production database connected.</p>'+form([["username","Username"],["password","Password","password"]])+'<div class="actions"><button class="btn primary" onclick="login()">Sign in</button></div></div></div>';
  const defs={
- booking:["New booking",[["customer_id","Customer ID","number"],["vehicle_id","Vehicle ID","number"],["service_id","Service ID","number"],["quantity","Hours / quantity","number","1"],["unit_price","Unit price AED","number","0"],["discount","Discount AED","number","0"],["vat_rate","VAT %","number","5"],["deposit","Deposit AED","number","0"],["payment_status","Payment status","text","unpaid"],["start_at","Start","datetime-local"],["end_at","End","datetime-local"],["notes","Notes"]]],
+ booking:["New booking",[["customer_name","Customer name","text"],["customer_phone","Phone (new customer)"],["customer_email","Email (new customer)","email"],["vehicle_id","Vehicle ID","number"],["service_id","Service ID","number"],["quantity","Hours / quantity","number","1"],["unit_price","Unit price AED","number","0"],["discount","Discount AED","number","0"],["vat_rate","VAT %","number","5"],["deposit","Deposit AED","number","0"],["payment_status","Payment status","text","unpaid"],["start_at","Start","datetime-local"],["end_at","End","datetime-local"],["notes","Notes"]]],
  vehicles:["Add vehicle",[["name","Vehicle name"],["category","Category","text","Quad"],["registration","Registration"],["rate_per_hour","Hourly rate AED","number"],["status","Status","text","available"],["notes","Notes"]]],
  customers:["Add customer",[["name","Name"],["phone","Phone"],["email","Email"],["nationality","Nationality"],["id_reference","ID / passport reference"],["notes","Notes"]]],
  services:["Add service",[["name","Service name"],["category","Category","text","Other"],["price","Price AED","number"],["vat_rate","VAT %","number","5"]]],
@@ -94,6 +94,19 @@ window.submitForm=async()=>{
  ["quantity","unit_price","discount","vat_rate","deposit","rate_per_hour","price","amount","vat_amount","cost","customer_id","vehicle_id","service_id"].forEach(k=>{if(k in b)b[k]=Number(b[k]||0);});
  if(modal==="booking"){b.status="completed";b.invoice_no="RNT-"+Date.now();}
  try{
+  if(modal==="booking"){
+   const customerName=String(b.customer_name||"").trim();
+   if(!customerName)return alert("Enter a customer name.");
+   let customer=(S.customers||[]).find(x=>String(x.name||"").trim().toLowerCase()===customerName.toLowerCase());
+   if(mode==="api"){
+    if(!customer)customer=await api("/api/customers",{method:"POST",body:JSON.stringify({name:customerName,phone:b.customer_phone||"",email:b.customer_email||""})});
+   }else if(!customer){
+    customer={id:Date.now(),name:customerName,phone:b.customer_phone||"",email:b.customer_email||""};
+    S.customers.push(customer);
+   }
+   b.customer_id=customer.id;
+   delete b.customer_name;delete b.customer_phone;delete b.customer_email;
+  }
   if(mode==="api"){await api("/api/"+endpoint,{method:"POST",body:JSON.stringify(b)});await refreshApi();}
   else{b.id=Date.now();if(modal==="booking"){const taxable=Math.max(0,(b.quantity||1)*(b.unit_price||0)-(b.discount||0));b.subtotal=(b.quantity||1)*(b.unit_price||0);b.vat_amount=taxable*(b.vat_rate||5)/100;b.total=taxable+b.vat_amount;}S[endpoint].push(b);save();}
   modal="";render();
