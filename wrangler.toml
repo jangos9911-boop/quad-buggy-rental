@@ -13,3 +13,4 @@ enabled = true
 binding = "DB"
 database_name = "quad-buggy-rental"
 database_id = "55ccb422-00a4-4432-ad3b-8ce0d53cbbdd"
+migrations_dir = "migrations"
