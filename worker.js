@@ -67,6 +67,8 @@ const APP_HTML=String.raw`<!doctype html><html><head><meta charset="utf-8"><meta
 (function(){
 "use strict";
 var state={tab:"Overview",user:null,data:{vehicles:[],customers:[],services:[],rentals:[],expenses:[],maintenance:[],staff:[],audit:[],fleet:[],schedule:null}};
+var CLIENT_ROLE_PERMISSIONS={admin:["*"],manager:["dashboard.read","bookings.read","bookings.write","fleet.read","fleet.write","customers.read","customers.write","services.read","reports.read","finance.read","pickup.write"],staff:["dashboard.read","bookings.read","bookings.write","fleet.read","customers.read","customers.write","services.read","pickup.write"],accountant:["dashboard.read","bookings.read","customers.read","services.read","reports.read","finance.read","finance.write","expenses.read","expenses.write"],maintenance:["fleet.read","fleet.write","maintenance.read","maintenance.write"]};
+function can(u,p){var permissions=CLIENT_ROLE_PERMISSIONS[u&&u.role]||[];return !!u&&(u.role==="admin"||permissions.indexOf(p)>=0||permissions.indexOf("*")>=0)}
 var root=document.getElementById("root");
 function esc(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
 function money(v){return "AED "+Number(v||0).toLocaleString("en-AE",{minimumFractionDigits:2,maximumFractionDigits:2})}
