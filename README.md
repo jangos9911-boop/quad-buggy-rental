@@ -72,3 +72,29 @@ Dashboard, bookings/invoices, vehicles, customers, services, expenses, maintenan
 ### Important
 
 A real production deployment cannot be honestly marked live until a Cloudflare account has supplied the D1 database ID and Worker secrets. No credentials or secrets are committed to GitHub.
+
+## RentalOS SaaS subscriptions (manual bank transfer)
+
+The SaaS onboarding flow starts each new business with a 14-day trial. Subscription billing is manual: a business owner submits the selected plan, monthly/yearly term, amount paid, bank reference and payment date from the **Subscription** section. A platform administrator verifies the transfer and approves or rejects the request. Approval activates the subscription for 30 days (monthly) or 365 days (yearly), extending from the later of today or the current paid-through date.
+
+### Required setup
+
+1. Apply the new D1 migration: `migrations/0012_manual_subscriptions.sql`. Do not run the migration twice; it contains one-time `ALTER TABLE` statements.
+2. Configure the Worker secret `PLATFORM_ADMIN_TOKEN` with a long, random, unique value in Cloudflare Worker **Settings → Variables and Secrets**. Do not commit this token to GitHub or share it with customers.
+3. Deploy the Worker code after the migration is applied.
+4. Open the RentalOS sign-in page and choose **Platform administrator**. Enter the platform token to open the platform workspace.
+5. Configure your bank name, account name, account number, IBAN/SWIFT (as applicable), payment instructions and support email in the platform workspace. These details are shown to authenticated business owners in their Subscription section.
+6. Set your plan names and pricing with customers before requesting payment. Amounts are recorded as entered by the business owner and are manually checked against the bank statement; the app does not independently verify a transfer.
+
+### Access and review behavior
+
+- Only the business owner/admin can view the subscription section and submit a payment request.
+- A business can have one pending payment request at a time.
+- Platform administration APIs require the `PLATFORM_ADMIN_TOKEN` request header.
+- Approving a request sets the business subscription to active and records the plan and paid-through date. Rejected requests do not activate access.
+- Writes are blocked after trial/subscription expiry, except the payment-request endpoint so an owner can submit a transfer for review. Read access remains available to view records and billing status.
+- The platform admin token is held only in page memory and is not stored in local storage.
+
+### Production caveats
+
+This is a manual verification workflow, not a payment gateway or automated bank reconciliation. Configure and protect the platform admin token, apply the D1 migration, set backup/restore procedures, and test with a separate business before accepting paying customers. No Cloudflare deployment or production database migration is considered complete until verified in the Cloudflare dashboard.

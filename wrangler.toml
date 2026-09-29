@@ -2,10 +2,6 @@ name = "quad-buggy-rental"
 main = "worker.js"
 compatibility_date = "2026-09-24"
 
-[assets]
-directory = "."
-not_found_handling = "single-page-application"
-
 [observability]
 enabled = true
 
@@ -13,3 +9,4 @@ enabled = true
 binding = "DB"
 database_name = "quad-buggy-rental"
 database_id = "55ccb422-00a4-4432-ad3b-8ce0d53cbbdd"
+migrations_dir = "migrations"
