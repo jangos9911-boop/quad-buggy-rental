@@ -103,6 +103,38 @@ html,body{background:#0a0d10;color:#f1eee7;font-family:Inter,"Aptos","Segoe UI",
 .loginPage{background:radial-gradient(ellipse at 50% 5%,rgba(207,181,126,.12),transparent 38%),#090e10}
 .emptyDash,.empty{color:#98a39b}
 @media(max-width:900px){.mobileNav button.active{background:linear-gradient(110deg,#d7c08d,#bea46c);color:#171813;border-color:transparent}.mobileNav button{background:#141c1e;border-color:rgba(185,197,183,.14);color:#b4beb6}}
+
+/* Crisp typography and controls */
+*,*::before,*::after{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+html{ text-rendering:optimizeLegibility;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html,body{font-family:Inter,"Aptos","Segoe UI",system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.5;letter-spacing:.005em;font-weight:450}
+button,input,select{font:inherit;letter-spacing:inherit}
+.title h1{font:700 clamp(29px,3vw,35px)/1.15 Inter,"Aptos","Segoe UI",system-ui,sans-serif;letter-spacing:-.035em}
+.title p{font-size:14px;line-height:1.55;color:#b4beb7}
+.dashboardHero h2{font:650 clamp(26px,3vw,35px)/1.2 Inter,"Aptos","Segoe UI",system-ui,sans-serif;letter-spacing:-.03em}
+.dashboardHero p{font-size:14px;line-height:1.55;color:#c0c8c1}
+.dashboardHero .eyebrow{font-size:10px;font-weight:750;letter-spacing:.17em}
+.heroDate{font-size:12px;font-weight:600}.heroStatus{font-size:10px;font-weight:750;letter-spacing:.1em}
+.kpiTop{font-size:11px;font-weight:750;letter-spacing:.09em;color:#b2bdb5}
+.kpiValue{font:700 29px/1.12 Inter,"Aptos","Segoe UI",system-ui,sans-serif;font-variant-numeric:tabular-nums;letter-spacing:-.035em}
+.kpiFoot{font-size:12px;line-height:1.45;color:#a5b0a8}
+.panelHead h3,.section h2{font:650 16px/1.35 Inter,"Aptos","Segoe UI",system-ui,sans-serif;letter-spacing:-.01em}
+.panelHead span{font-size:12px;color:#aab5ad}
+.opMain strong{font-size:13px;font-weight:650;line-height:1.4}.opMain small{font-size:11px;color:#a7b2aa}.opAmount{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.btn{font-size:13px;font-weight:650;line-height:1.25;min-height:40px}
+.nav button{font-size:13px;font-weight:580;line-height:1.35;min-height:42px}
+.tableWrap th{font-size:10px;font-weight:750;letter-spacing:.09em;color:#ddc58f}
+.tableWrap td{font-size:13px;line-height:1.45;color:#eef0e9}
+.modalBox h2,.loginBox h2{font:650 24px/1.25 Inter,"Aptos","Segoe UI",system-ui,sans-serif;letter-spacing:-.025em}
+.field label{font-size:12px;font-weight:600;color:#c1cac2}
+.field input,.field select{font-size:14px;line-height:1.4;min-height:48px}
+.field input::placeholder{color:#89958e;opacity:1}
+.workspaceLabel{font-size:10px;letter-spacing:.14em;color:#d3bc88}
+.workspaceBusiness{font-size:14px;line-height:1.4}
+.workspaceUser{font-size:12px;color:#aab5ad}
+.emptyDash,.empty{font-size:13px;line-height:1.5;color:#aab5ad}
+:focus-visible{outline:2px solid #e0c88e;outline-offset:2px}
+@media(max-width:600px){.main{padding:18px 15px}.title h1{font-size:28px}.dashboardHero{padding:22px}.dashboardHero h2{font-size:25px}.kpiValue{font-size:24px}.mobileNav button{font-size:12px;font-weight:650}}
 </style></head><body><div id="root"><div class="loading">Loading RentalOS…</div></div><script>
 (function(){
 "use strict";
