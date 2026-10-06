@@ -1,4 +1,4 @@
-name = "quad-buggy-rental"
+name = "rentalos"
 main = "worker.js"
 compatibility_date = "2026-09-24"
 
