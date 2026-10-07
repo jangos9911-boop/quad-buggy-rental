@@ -238,7 +238,35 @@ button:hover,.btn:hover{transform:translateY(-2px)}
 .preview{animation:roSalesGlow 3.5s ease-in-out infinite}
 .bar{animation:roSalesBar .9s cubic-bezier(.2,.8,.2,1) both}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
-</style></style></head><body>
+</style></style><style id="rentalos-front-motion">
+@keyframes rosHeroIn{0%{opacity:0;transform:translateY(28px)}100%{opacity:1;transform:none}}
+@keyframes rosDashboardIn{0%{opacity:0;transform:perspective(1200px) rotateY(-10deg) rotateX(4deg) translateY(28px) scale(.97)}100%{opacity:1;transform:perspective(1200px) rotateY(-5deg) rotateX(2deg) translateY(0) scale(1)}}
+@keyframes rosFloat{0%,100%{transform:perspective(1200px) rotateY(-5deg) rotateX(2deg) translateY(0)}50%{transform:perspective(1200px) rotateY(-5deg) rotateX(2deg) translateY(-9px)}}
+@keyframes rosGlow{0%,100%{opacity:.35;transform:scale(.96)}50%{opacity:.8;transform:scale(1.04)}}
+@keyframes rosBar{from{height:0!important;opacity:.2}to{opacity:.85}}
+@keyframes rosPulse{0%,100%{opacity:.55;box-shadow:0 0 0 0 rgba(94,234,212,0)}50%{opacity:1;box-shadow:0 0 0 7px rgba(94,234,212,.08)}}
+@keyframes rosReveal{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.heroGrid>*:first-child{animation:rosHeroIn .75s cubic-bezier(.16,1,.3,1) both}
+.heroGrid>.dashboard{animation:rosDashboardIn 1s .18s cubic-bezier(.16,1,.3,1) both,rosFloat 5s 1.3s ease-in-out infinite}
+.hero:before{content:"";position:absolute;width:520px;height:520px;right:3%;top:8%;border-radius:50%;background:radial-gradient(circle,rgba(20,184,166,.16),transparent 66%);filter:blur(20px);pointer-events:none;animation:rosGlow 5s ease-in-out infinite}
+.hero:after{animation:rosGlow 6s ease-in-out infinite}
+.live{animation:rosPulse 2s ease-in-out infinite}
+.metrics .metric{opacity:0;animation:rosReveal .55s cubic-bezier(.16,1,.3,1) both}
+.metrics .metric:nth-child(1){animation-delay:.65s}.metrics .metric:nth-child(2){animation-delay:.75s}.metrics .metric:nth-child(3){animation-delay:.85s}
+.chart{opacity:0;animation:rosReveal .6s .95s cubic-bezier(.16,1,.3,1) both}
+.bars i{animation:rosBar .9s cubic-bezier(.16,1,.3,1) both}
+.bars i:nth-child(1){animation-delay:1.05s}.bars i:nth-child(2){animation-delay:1.12s}.bars i:nth-child(3){animation-delay:1.19s}.bars i:nth-child(4){animation-delay:1.26s}.bars i:nth-child(5){animation-delay:1.33s}.bars i:nth-child(6){animation-delay:1.4s}.bars i:nth-child(7){animation-delay:1.47s}
+.feature,.plan,.step,.type,.cta{opacity:0;animation:rosReveal .65s cubic-bezier(.16,1,.3,1) both}
+.feature:nth-child(1),.plan:nth-child(1),.step:nth-child(1),.type:nth-child(1){animation-delay:.08s}
+.feature:nth-child(2),.plan:nth-child(2),.step:nth-child(2),.type:nth-child(2){animation-delay:.16s}
+.feature:nth-child(3),.plan:nth-child(3),.step:nth-child(3),.type:nth-child(3){animation-delay:.24s}
+.feature:nth-child(4),.type:nth-child(4){animation-delay:.32s}
+.feature:hover,.plan:hover{transform:translateY(-7px);border-color:rgba(20,184,166,.4);box-shadow:0 22px 55px rgba(0,0,0,.25);transition:transform .28s ease,box-shadow .28s ease,border-color .28s ease}
+.btn.primary{transition:transform .22s ease,box-shadow .22s ease}
+.btn.primary:hover{transform:translateY(-3px);box-shadow:0 16px 38px rgba(20,184,166,.28)}
+@media(max-width:850px){.heroGrid>.dashboard{animation:rosDashboardIn 1s .18s cubic-bezier(.16,1,.3,1) both,rosFloat 5s 1.3s ease-in-out infinite}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.heroGrid>*:first-child,.heroGrid>.dashboard,.metrics .metric,.chart,.feature,.plan,.step,.type,.cta{opacity:1!important;transform:none!important}}
+</style></head><body>
 <header class="wrap topbar"><a class="brand" href="/">RENTAL<span>OS</span><small>RENTAL BUSINESS PLATFORM</small></a><nav class="nav"><a href="#features">Features</a><a href="#industries">Industries</a><a href="#pricing">Pricing</a><a class="btn" href="/app">Sign in</a></nav></header>
 <main><section class="hero"><div class="wrap heroGrid"><div><div class="eyebrow">One workspace. Full control.</div><h1>Run your rental business <em>with clarity.</em></h1><p class="lead">Bookings, fleet, customers, payments and daily operations—organized in one calm, capable workspace built for rental teams.</p><div class="heroActions"><a class="btn primary" href="/app">Start your 14-day free trial <span>→</span></a><a class="btn" href="#features">Explore the platform</a></div><div class="micro">No card required to start · Built for rental businesses of every size</div></div>
 <div class="dashboard" aria-label="Illustrative RentalOS dashboard preview"><div class="dashTop"><strong>RENTALOS / EXECUTIVE</strong><span class="live">● WORKSPACE PREVIEW</span></div><div class="dashBody"><div class="dashTitle">Good morning, Operator</div><div class="dashSub">Your rental operation at a glance</div><div class="metrics"><div class="metric"><small>Revenue</small><strong>AED 8,420</strong></div><div class="metric"><small>Active rentals</small><strong>12</strong></div><div class="metric"><small>Fleet utilization</small><strong>76%</strong></div></div><div class="chart"><div class="chartHead"><b>Revenue activity</b><span>Last 7 days</span></div><div class="bars"><i style="height:30%"></i><i style="height:48%"></i><i style="height:39%"></i><i style="height:65%"></i><i style="height:53%"></i><i style="height:82%"></i><i style="height:100%"></i></div></div><div class="dashBottom"><div class="mini"><b>Upcoming pickups</b>3 bookings scheduled</div><div class="mini"><b>Operations</b>Fleet and payments overview</div></div></div></div></div></section>
