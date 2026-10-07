@@ -135,7 +135,38 @@ button,input,select{font:inherit;letter-spacing:inherit}
 .emptyDash,.empty{font-size:13px;line-height:1.5;color:#a8b5c7}
 :focus-visible{outline:2px solid #e0c88e;outline-offset:2px}
 @media(max-width:600px){.main{padding:18px 15px}.title h1{font-size:28px}.dashboardHero{padding:22px}.dashboardHero h2{font-size:25px}.kpiValue{font-size:24px}.mobileNav button{font-size:12px;font-weight:650}}
-</style></head><body><div id="root"><div class="loading">Loading RentalOS…</div></div><script>
+<style>
+/* RentalOS premium motion layer */
+@keyframes roFadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes roFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes roScaleIn{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:scale(1)}}
+@keyframes roBarGrow{from{transform:scaleY(0);transform-origin:bottom}to{transform:scaleY(1);transform-origin:bottom}}
+@keyframes roPulse{0%,100%{box-shadow:0 0 0 0 rgba(20,184,166,0)}50%{box-shadow:0 0 0 5px rgba(20,184,166,.08)}}
+.app{animation:roFadeIn .45s ease-out both}
+.sidebar{animation:roFadeUp .5s cubic-bezier(.2,.8,.2,1) both}
+.main{animation:roFadeUp .55s .04s cubic-bezier(.2,.8,.2,1) both}
+.top{animation:roFadeIn .5s .08s ease-out both}
+.dashboardHero{animation:roFadeUp .55s .12s cubic-bezier(.2,.8,.2,1) both}
+.premiumKpi,.dashPanel,.card,.insight,.quickGrid,.tableWrap,.section{animation:roFadeUp .5s cubic-bezier(.2,.8,.2,1) both}
+.premiumKpi:nth-child(2),.card:nth-child(2){animation-delay:.06s}
+.premiumKpi:nth-child(3),.card:nth-child(3){animation-delay:.12s}
+.premiumKpi:nth-child(4),.card:nth-child(4){animation-delay:.18s}
+.premiumKpi:hover,.card:hover,.dashPanel:hover,.insight:hover{transform:translateY(-2px);transition:transform .22s ease,box-shadow .22s ease}
+.btn{transition:transform .18s ease,box-shadow .18s ease,background .18s ease,border-color .18s ease}
+.btn:hover{transform:translateY(-1px)}
+.nav button{transition:background .2s ease,color .2s ease,border-color .2s ease,transform .18s ease}
+.nav button:hover{transform:translateX(2px)}
+.dot,.pill{animation:roPulse 2.4s ease-in-out infinite}
+.bar{animation:roBarGrow .75s cubic-bezier(.2,.8,.2,1) both}
+.barCol:nth-child(2) .bar{animation-delay:.06s}.barCol:nth-child(3) .bar{animation-delay:.12s}.barCol:nth-child(4) .bar{animation-delay:.18s}.barCol:nth-child(5) .bar{animation-delay:.24s}.barCol:nth-child(6) .bar{animation-delay:.30s}.barCol:nth-child(7) .bar{animation-delay:.36s}
+.loading{animation:roFadeIn .35s ease-out both}
+.loginPage{animation:roFadeIn .45s ease-out both}
+.loginBox{animation:roScaleIn .55s cubic-bezier(.2,.8,.2,1) both}
+.modal{animation:roFadeIn .2s ease-out both}.modalBox{animation:roScaleIn .25s cubic-bezier(.2,.8,.2,1) both}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.001ms!important}
+}
+</style></style></head><body><div id="root"><div class="loading">Loading RentalOS…</div></div><script>
 (function(){
 "use strict";
 var state={tab:"Overview",user:null,data:{vehicles:[],customers:[],services:[],rentals:[],expenses:[],maintenance:[],staff:[],audit:[],fleet:[],schedule:null}};
