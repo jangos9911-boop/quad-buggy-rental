@@ -69,7 +69,7 @@ function form(fields){
 function modalHtml(){
  if(modal==="login")return '<div class="modal"><div class="modalbox"><h2>Staff login</h2><p class="muted">Production database connected.</p>'+form([["username","Username"],["password","Password","password"]])+'<div class="actions"><button class="btn primary" onclick="login()">Sign in</button></div></div></div>';
  const defs={
- booking:["New booking",[["customer_name","Customer name","text"],["customer_phone","Phone (new customer)"],["customer_email","Email (new customer)","email"],["vehicle_id","Vehicle ID","number"],["service_id","Service ID","number"],["quantity","Hours / quantity","number","1"],["unit_price","Unit price AED","number","0"],["discount","Discount AED","number","0"],["vat_rate","VAT %","number","5"],["deposit","Deposit AED","number","0"],["payment_status","Payment status","text","unpaid"],["start_at","Start","datetime-local"],["end_at","End","datetime-local"],["notes","Notes"]]],
+ booking:["Quick quad rental",[["customer_name","Customer name","text"],["customer_phone","Phone number"],["vehicle_id","Quad / buggy ID","number"],["quantity","Duration (hours)","number","1"],["unit_price","Rate (AED)","number","0"],["discount","Discount (AED)","number","0"],["vat_rate","VAT %","number","5"],["deposit","Deposit (AED)","number","0"],["payment_status","Payment status","text","unpaid"],["notes","Short note"]]],
  vehicles:["Add vehicle",[["name","Vehicle name"],["category","Category","text","Quad"],["registration","Registration"],["rate_per_hour","Hourly rate AED","number"],["status","Status","text","available"],["notes","Notes"]]],
  customers:["Add customer",[["name","Name"],["phone","Phone"],["email","Email"],["nationality","Nationality"],["id_reference","ID / passport reference"],["notes","Notes"]]],
  services:["Add service",[["name","Service name"],["category","Category","text","Other"],["price","Price AED","number"],["vat_rate","VAT %","number","5"]]],
@@ -92,7 +92,7 @@ window.submitForm=async()=>{
  const endpoint=map[modal], b={};
  document.querySelectorAll(".modalbox input").forEach(i=>{if(i.id.startsWith("f_"))b[i.id.slice(2)]=i.value;});
  ["quantity","unit_price","discount","vat_rate","deposit","rate_per_hour","price","amount","vat_amount","cost","customer_id","vehicle_id","service_id"].forEach(k=>{if(k in b)b[k]=Number(b[k]||0);});
- if(modal==="booking"){b.status="completed";b.invoice_no="RNT-"+Date.now();}
+ if(modal==="booking"){b.status="completed";b.invoice_no="RNT-"+Date.now();const start=new Date();b.start_at=start.toISOString();b.end_at=new Date(start.getTime()+Math.max(1,Number(b.quantity)||1)*3600000).toISOString();}
  try{
   if(modal==="booking"){
    const customerName=String(b.customer_name||"").trim();
