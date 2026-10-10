@@ -1,7 +1,5 @@
 -- RentalOS production migration: make booking times optional for quad, buggy and ATV rentals.
 -- Preserves all existing rental rows, business fields, deposits, pickup/return inspections and commission data.
-PRAGMA foreign_keys=OFF;
-BEGIN TRANSACTION;
 
 ALTER TABLE rentals RENAME TO rentals_v1;
 
@@ -72,5 +70,3 @@ CREATE INDEX IF NOT EXISTS idx_rentals_start ON rentals(start_at);
 CREATE INDEX IF NOT EXISTS idx_rentals_status_schedule ON rentals(business_id,status,start_at,end_at);
 CREATE INDEX IF NOT EXISTS idx_rentals_vehicle ON rentals(vehicle_id);
 
-COMMIT;
-PRAGMA foreign_keys=ON;
