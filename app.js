@@ -69,7 +69,7 @@ function form(fields){
 function modalHtml(){
  if(modal==="login")return '<div class="modal"><div class="modalbox"><h2>Staff login</h2><p class="muted">Production database connected.</p>'+form([["username","Username"],["password","Password","password"]])+'<div class="actions"><button class="btn primary" onclick="login()">Sign in</button></div></div></div>';
  const defs={
- booking:["Quick quad rental",[["customer_name","Customer name","text"],["customer_phone","Phone number"],["vehicle_id","Quad / buggy ID","number"],["quantity","Duration (hours)","number","1"],["unit_price","Rate (AED)","number","0"],["discount","Discount (AED)","number","0"],["vat_rate","VAT %","number","5"],["deposit","Deposit (AED)","number","0"],["payment_status","Payment status","text","unpaid"],["notes","Short note"]]],
+ booking:["Quick quad rental",[["customer_name","Customer name","text"],["customer_phone","Phone number"],["vehicle_id","Quad / buggy ID","number"],["quantity","Quantity / hours (if applicable)","number","1"],["unit_price","Rental amount (AED)","number","0"],["purchase_rate","Purchase / base cost (AED)","number","0"],["driver_name","Guest-arriving driver / referrer"],["driver_commission_percent","Driver commission (% of profit)","number","0"],["start_at","Start time (optional)","datetime-local"],["end_at","End time (optional)","datetime-local"],["discount","Discount (AED)","number","0"],["vat_rate","VAT %","number","5"],["deposit","Deposit (AED)","number","0"],["payment_status","Payment status","text","unpaid"],["notes","Short note"]]],
  vehicles:["Add vehicle",[["name","Vehicle name"],["category","Category","text","Quad"],["registration","Registration"],["rate_per_hour","Hourly rate AED","number"],["status","Status","text","available"],["notes","Notes"]]],
  customers:["Add customer",[["name","Name"],["phone","Phone"],["email","Email"],["nationality","Nationality"],["id_reference","ID / passport reference"],["notes","Notes"]]],
  services:["Add service",[["name","Service name"],["category","Category","text","Other"],["price","Price AED","number"],["vat_rate","VAT %","number","5"]]],
@@ -91,8 +91,8 @@ window.submitForm=async()=>{
  const map={vehicles:"vehicles",customers:"customers",services:"services",maintenance:"maintenance",expense:"expenses",booking:"rentals"};
  const endpoint=map[modal], b={};
  document.querySelectorAll(".modalbox input").forEach(i=>{if(i.id.startsWith("f_"))b[i.id.slice(2)]=i.value;});
- ["quantity","unit_price","discount","vat_rate","deposit","rate_per_hour","price","amount","vat_amount","cost","customer_id","vehicle_id","service_id"].forEach(k=>{if(k in b)b[k]=Number(b[k]||0);});
- if(modal==="booking"){b.status="completed";b.invoice_no="RNT-"+Date.now();const start=new Date();b.start_at=start.toISOString();b.end_at=new Date(start.getTime()+Math.max(1,Number(b.quantity)||1)*3600000).toISOString();}
+ ["quantity","unit_price","purchase_rate","driver_commission_percent","discount","vat_rate","deposit","rate_per_hour","price","amount","vat_amount","cost","customer_id","vehicle_id","service_id"].forEach(k=>{if(k in b)b[k]=Number(b[k]||0);});
+ if(modal==="booking"){b.status="completed";b.invoice_no="RNT-"+Date.now();b.start_at=b.start_at||"";b.end_at=b.end_at||"";const gross=Math.max(0,(Number(b.quantity)||1)*(Number(b.unit_price)||0)-(Number(b.discount)||0));b.rental_profit=Math.max(0,gross-(Number(b.purchase_rate)||0));b.driver_commission_amount=Math.round(b.rental_profit*Math.max(0,Math.min(100,Number(b.driver_commission_percent)||0))/100*100)/100;}
  try{
   if(modal==="booking"){
    const customerName=String(b.customer_name||"").trim();
@@ -108,7 +108,7 @@ window.submitForm=async()=>{
    delete b.customer_name;delete b.customer_phone;delete b.customer_email;
   }
   if(mode==="api"){await api("/api/"+endpoint,{method:"POST",body:JSON.stringify(b)});await refreshApi();}
-  else{b.id=Date.now();if(modal==="booking"){const taxable=Math.max(0,(b.quantity||1)*(b.unit_price||0)-(b.discount||0));b.subtotal=(b.quantity||1)*(b.unit_price||0);b.vat_amount=taxable*(b.vat_rate||5)/100;b.total=taxable+b.vat_amount;}S[endpoint].push(b);save();}
+  else{b.id=Date.now();if(modal==="booking"){const taxable=Math.max(0,(b.quantity||1)*(b.unit_price||0)-(b.discount||0));b.subtotal=(b.quantity||1)*(b.unit_price||0);b.vat_amount=taxable*(b.vat_rate||5)/100;b.total=taxable+b.vat_amount;b.rental_profit=Math.max(0,taxable-(Number(b.purchase_rate)||0));b.driver_commission_amount=Math.round(b.rental_profit*Math.max(0,Math.min(100,Number(b.driver_commission_percent)||0))/100*100)/100;}S[endpoint].push(b);save();}
   modal="";render();
  }catch(e){alert(e.message);}
 };
@@ -120,7 +120,7 @@ window.csv=k=>{
 window.backup=()=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)],{type:"application/json"}));a.download="quad-rental-backup.json";a.click();};
 function render(){
  let c=tab==="Overview"?overview():
- tab==="Bookings"?listing("rentals","Bookings","Rental invoices and payments.",["invoice_no","customer_name","vehicle_name","total","payment_status"],"booking"):
+ tab==="Bookings"?listing("rentals","Bookings","Rental invoices, driver commissions and payments.",["invoice_no","customer_name","vehicle_name","total","driver_name","rental_profit","driver_commission_amount","payment_status"],"booking"):
  tab==="Vehicles"?listing("vehicles","Vehicles","Quad and buggy fleet.",["id","name","category","rate_per_hour","status"],"vehicles"):
  tab==="Customers"?listing("customers","Customers","Customer records.",["id","name","phone","nationality","email"],"customers"):
  tab==="Services"?listing("services","Services","Additional services.",["id","name","category","price","vat_rate","active"],"services"):
