@@ -1,74 +1,37 @@
-# Quad & Buggy UAE Rental Desk
+# RentalOS — Rental Management Platform
 
-A standalone rental billing and operations dashboard for a UAE quad & buggy tourist-rental business.
+RentalOS is a multi-business rental operations platform for quad, ATV and buggy rentals, rent-a-car companies, and other rental businesses. The production app is hosted as a Cloudflare Worker with Cloudflare D1.
 
-## Current modules
+## Production capabilities
 
-- Dashboard: revenue, expenses, net result and outstanding balances
-- Bookings / rental invoices
-- Vehicles / fleet
-- Customers
-- Services
-- Expenses
-- CSV exports
-- Full JSON backup
-- AED and UAE VAT fields
-- Responsive mobile layout
+- Premium, responsive dashboard and business workspace
+- Multi-business signup, staff roles and business-specific data
+- Bookings, rental invoices, calendar and fleet management
+- Generic rental assets for ATVs, buggies, quads, cars, bikes and other rentable items
+- Optional start/end times for quad, buggy and ATV bookings
+- Driver/referrer name, purchase/base cost, profit, commission percentage and calculated commission amount
+- Deposits, pickup/return inspection, odometer/fuel tracking, late fees, charges and fines
+- Vehicle compliance reminders, maintenance and profitability reporting
+- Customer records and identity/licence document tracking
+- Expenses, payments, cheque tracking, CSV exports, data migration and JSON backup
+- AED / VAT support and subscription management with manual bank-transfer payment requests
 
-## Current data mode
+## Subscription pricing
 
-The standalone browser build stores data in browser localStorage. This makes the app easy to test and deploy as a static site, but localStorage is not suitable as the long-term source of truth for a business.
+- Starter — AED 99/month
+- Growth — AED 149/month
+- Business — AED 249/month
 
-## Production architecture
-
-Web app -> Cloudflare Workers/Pages -> Cloudflare D1 -> authenticated users
-
-Recommended production tables:
-
-- users
-- vehicles
-- customers
-- services
-- rentals
-- rental_items
-- payments
-- expenses
-- maintenance
-- audit_log
-- settings
-
-Production requirements should include authentication, role-based access, server-side validation, database backups, audit history, invoice numbering, payment reconciliation, date-range reports and VAT reporting.
+Subscription payments are handled manually by bank transfer and require verification before activation.
 
 ## Deployment
 
-The repository root is intentionally deployable as a static site. wrangler.toml is included for Cloudflare Workers static assets.
+The production Worker is named `rentalos` in Cloudflare. Its active source and deployment are managed through the Cloudflare Worker deployment. The repository also contains the original `quad-buggy-rental` Worker/static build for compatibility.
 
-Do not put API keys, passwords, database credentials or customer secrets in browser JavaScript.
+## Database migration
+
+`migrations/0002_rentalos_v2.sql` updates the rentals table to allow null `start_at` and `end_at` values while preserving current booking, business, inspection, deposit and driver commission columns and indexes. It is intended for the RentalOS production schema, not the older standalone schema.
 
 ## Repository
 
 GitHub: https://github.com/jangos9911-boop/quad-buggy-rental
-
-
-## Production setup
-
-The repository now includes a Cloudflare Worker API in `worker.js`, a D1 migration in `migrations/0001_production.sql`, and API-first UI behavior in `app.js`.
-
-To make it live:
-1. Create a Cloudflare D1 database named `quad-buggy-rental`.
-2. Apply `migrations/0001_production.sql`.
-3. Put the resulting D1 database ID into `wrangler.toml` under the commented `[[d1_databases]]` block, binding it as `DB`.
-4. Deploy with Wrangler.
-5. Set Worker secrets `AUTH_SECRET` (long random value) and `SETUP_TOKEN` (one-time setup value).
-6. Open `/api/setup` once with the setup token to create the first admin account. Setup then permanently closes once a user exists.
-7. Sign in through the app. Sessions are HttpOnly, Secure cookies and passwords are stored as PBKDF2 hashes with per-user salts.
-
-The browser app still has an offline local-storage fallback so the interface remains usable before the production database is connected. Once the Worker API is available, the app switches to the cloud database automatically.
-
-### Production modules
-
-Dashboard, bookings/invoices, vehicles, customers, services, expenses, maintenance, reports/CSV export, JSON backup, staff authentication, D1 persistence, and session-based access control are included in the repository foundation.
-
-### Important
-
-A real production deployment cannot be honestly marked live until a Cloudflare account has supplied the D1 database ID and Worker secrets. No credentials or secrets are committed to GitHub.
